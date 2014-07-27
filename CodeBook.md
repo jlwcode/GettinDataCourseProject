@@ -1,4 +1,6 @@
-	Code Book for Tidy Dataset created by run_analysis
+	Code Book for Summary Dataset created by run_analysis
+  
+The dataset output by run_analysis() contains the mean for each variable extracted from the Human Activity Recongnition Using Smartphones Data Set by run_analysis summarized by the mean for each variable for each subject/acvtivity pairing. See the README.md for run_analysis for further details on the variables extracted and the features_info.txt from the input data set for more information on the calculations performed to obtain these variables. The value of each variable is normalized to a value between -1 and 1.
 
 subject		2
 	Unique integer identifier for the volunteer the data is associated with
