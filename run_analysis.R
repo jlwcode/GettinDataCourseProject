@@ -9,7 +9,7 @@ createlabels <- function(basedir) {
   features <- read.table(featuresfile, header = FALSE, sep=" ",  row.names = NULL, col.names = c("number", "featurelabel"))
   removeangles <- grep("^angle", features$featurelabel)
   features <- features[-removeangles,]
-  extractmeanandstd <- grep("mean|std",features$featurelabel)
+  extractmeanandstd <- grep("mean\\(\\)|std\\(\\)",features$featurelabel)
   features <- features[extractmeanandstd,]
   features[,2] <- sapply(features[,2], function(x) sub("\\(\\)","", x))
   features[,2] <- sapply(features[,2], function(x) gsub("\\-","", x))
@@ -32,6 +32,8 @@ readdata <- function(type, basedir, features) {
   testdata
 }
 
+##
+
 getsubjectsandactivities <- function(type, basedir) {
   subjectfile <- paste(basedir, type, "/subject_", type, ".txt", sep="")
   activityfile <- paste(basedir, type, "/y_", type, ".txt", sep="")
@@ -51,15 +53,23 @@ getsubjectsandactivities <- function(type, basedir) {
 
 run_analysis <- function() {
   basedir <- "data/UCI Har Dataset/"
+  featuresfile <- paste(basedir, "features.txt", sep="")
+  
   featurelabels <- createlabels(basedir)
-  activitylabels <- getactivitylabels(basedir)
+
+   activitylabels <- getactivitylabels(basedir)
+
   testdata <- readdata("test", basedir, featurelabels)
+
   traindata <- readdata("train", basedir, featurelabels)
+
   testsubjects <- getsubjectsandactivities("test", basedir)
   trainsubjects <- getsubjectsandactivities("train", basedir)
   testdata <- cbind(testsubjects, testdata)
   traindata <- cbind(trainsubjects, traindata)
   testdata <- rbind(testdata, traindata)
   testdata[,2] <- sapply(testdata[,2], function(x) x = activitylabels[x,2])
-  testdata
+  melttestdata <- melt(testdata, id = c("subject", "activity"))
+  tidytestdata <- dcast(melttestdata, subject + activity ~ variable, fun.aggregate = mean) 
+  tidytestdata
 }
